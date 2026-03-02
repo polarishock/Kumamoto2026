@@ -30,12 +30,16 @@ import {
   Wind,
   ShieldCheck,
   Utensils,
-  ShoppingBag
+  ShoppingBag,
+  Languages,
+  MessageSquare,
+  Info,
+  Pencil
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
 // --- Types ---
-type Tab = 'JOURNAL' | 'TICKET' | 'PLANNING' | 'EXPENSE' | 'CREDITS';
+type Tab = 'JOURNAL' | 'TICKET' | 'PLANNING' | 'EXPENSE' | 'PHRASES' | 'CREDITS';
 
 interface WeatherForecast {
   time: string;
@@ -106,7 +110,7 @@ const JOURNAL_DATA: JournalEntry[] = [
     title: "熊本初見",
     subtitle: "Kumamoto First Sight",
     // Day 1 封面照片
-    image: "https://raw.githubusercontent.com/polarishock/Kumamoto2026/main/photos/day1top.jpg",
+    image: "https://images.unsplash.com/photo-1590230441637-d635073fe4aa?auto=format&fit=crop&w=1200&q=80",
     description: "從桃園機場出發，抵達熊本後展開旅程。品嚐著名的勝烈亭豬排，漫步於歷史悠久的熊本城，夜晚前往博多享用美味燒肉。",
     itinerary: [
       { time: "04:00 - 04:30", name: "家裡出發 → 桃園機場", type: 'TRANSPORT' },
@@ -146,7 +150,7 @@ const JOURNAL_DATA: JournalEntry[] = [
     title: "糸島海風",
     subtitle: "Itoshima Sea Breeze",
     // Day 2 封面照片
-    image: "https://raw.githubusercontent.com/polarishock/Kumamoto2026/main/photos/day2top.jpg",
+    image: "https://images.unsplash.com/photo-1505069194752-51c76275c32a?auto=format&fit=crop&w=1200&q=80",
     description: "參加糸島深度一日遊。從白絲瀑布的清涼到雷山千如寺的莊嚴，再到櫻井二見浦的浪漫海洋，感受糸島獨特的自然魅力。",
     itinerary: [
       { time: "07:00 - 08:00", name: "早餐自理", type: 'FOOD' },
@@ -189,7 +193,7 @@ const JOURNAL_DATA: JournalEntry[] = [
     title: "福岡漫遊",
     subtitle: "Fukuoka City Walk",
     // Day 3 封面照片
-    image: "https://raw.githubusercontent.com/polarishock/Kumamoto2026/main/photos/day3top.jpg",
+    image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
     description: "前往能古島海島公園享受自然美景與絕景烤肉。下午回到天神商圈與博多運河城盡情購物，最後以熱騰騰的牛腸鍋與LaLaport鋼彈劃下句點。",
     itinerary: [
       { time: "07:00 - 08:00", name: "早餐自理", type: 'FOOD' },
@@ -230,7 +234,7 @@ const JOURNAL_DATA: JournalEntry[] = [
     title: "歸途時光",
     subtitle: "Homebound Journey",
     // Day 4 封面照片
-    image: "https://raw.githubusercontent.com/polarishock/Kumamoto2026/main/photos/day4top.jpg",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109c0f2?auto=format&fit=crop&w=1200&q=80",
     description: "最後的熊本時光。辦理退房後前往機場，在觀景台欣賞飛機起降，並在商店區挑選伴手禮，帶著滿滿的回憶返回家園。",
     itinerary: [
       { time: "07:00 - 07:10", name: "辦理退房", type: 'STAY' },
@@ -272,6 +276,66 @@ const INITIAL_TICKETS: TicketItem[] = [
   { id: '2', type: 'FLIGHT', title: '星宇航空 Starlux', detail: 'JX847 | KMJ -> TPE', time: '11:55 - 13:20' },
   { id: '3', type: 'HOTEL', title: '相鐵Grand Fresa 熊本飯店', address: '2-2-23,Shimotori,Chuo-ku,熊本,日本', time: '20260925-20260928', Tel: '806-0807' },
   { id: '4', type: 'TRAIN', title: 'JR九州鐵路周遊券', detail: '熊本 <-> 博多', time: '3日券', location: '北部九州' }
+];
+
+const PHRASES_DATA = [
+  {
+    category: "基本問候",
+    icon: MessageSquare,
+    phrases: [
+      { chinese: "你好", japanese: "こんにちは", romaji: "Konnichiwa" },
+      { chinese: "謝謝", japanese: "ありがとうございます", romaji: "Arigatou gozaimasu" },
+      { chinese: "對不起 / 請問", japanese: "すみません", romaji: "Sumimasen" },
+      { chinese: "是的", japanese: "はい", romaji: "Hai" },
+      { chinese: "不是", japanese: "いいえ", romaji: "Iie" },
+      { chinese: "再見", japanese: "さようなら", romaji: "Sayounara" },
+    ]
+  },
+  {
+    category: "餐廳用餐",
+    icon: Utensils,
+    phrases: [
+      { chinese: "我要點餐", japanese: "注文をお願いします", romaji: "Chuumon o Onegaishimasu" },
+      { chinese: "請給我這個", japanese: "これをください", romaji: "Kore o kudasai" },
+      { chinese: "有推薦的嗎？", japanese: "おすすめはありますか？", romaji: "Osusume wa arimasu ka?" },
+      { chinese: "我不吃肉", japanese: "肉は食べられません", romaji: "Niku wa taberaremasen" },
+      { chinese: "買單", japanese: "お会計をお願いします", romaji: "Okaikei o Onegaishimasu" },
+      { chinese: "很好吃", japanese: "おいしいです", romaji: "Oishii desu" },
+    ]
+  },
+  {
+    category: "購物免稅",
+    icon: ShoppingBag,
+    phrases: [
+      { chinese: "多少錢？", japanese: "いくらですか？", romaji: "Ikura desu ka?" },
+      { chinese: "可以免稅嗎？", japanese: "免税できますか？", romaji: "Menzei dekimasu ka?" },
+      { chinese: "請給我收據", japanese: "領収書をください", romaji: "Ryoushuusho o kudasai" },
+      { chinese: "可以用信用卡嗎？", japanese: "クレジットカードは使えますか？", romaji: "Kurejitto kaado wa tsukaemasu ka?" },
+      { chinese: "太貴了", japanese: "高いです", romaji: "Takai desu" },
+    ]
+  },
+  {
+    category: "交通問路",
+    icon: MapPin,
+    phrases: [
+      { chinese: "請問...在哪裡？", japanese: "...はどこですか？", romaji: "... wa doko desu ka?" },
+      { chinese: "...車站在哪？", japanese: "駅はどこですか？", romaji: "Eki wa doko desu ka?" },
+      { chinese: "我要去...", japanese: "...に行きたいです", romaji: "... ni ikitai desu" },
+      { chinese: "這班車會到...嗎？", japanese: "これは...に行きますか？", romaji: "Kore wa ... ni ikimasu ka?" },
+      { chinese: "請帶我到這裡", japanese: "ここへ行ってください", romaji: "Koko e itte kudasai" },
+    ]
+  },
+  {
+    category: "緊急狀況",
+    icon: ShieldCheck,
+    phrases: [
+      { chinese: "請幫幫我", japanese: "助けてください", romaji: "Tasukete kudasai" },
+      { chinese: "我不舒服", japanese: "気分が悪いです", romaji: "Kibun ga warui desu" },
+      { chinese: "我迷路了", japanese: "道に迷いました", romaji: "Michi ni mayoimashita" },
+      { chinese: "我弄丟了護照", japanese: "パスポートをなくしました", romaji: "Pasupooto o nakushimashita" },
+      { chinese: "請叫救護車", japanese: "救急車を呼んでください", romaji: "Kyuukyuusha o yonde kudasai" },
+    ]
+  }
 ];
 
 const INITIAL_PLANNING: PlanningItem[] = [
@@ -337,17 +401,36 @@ const INITIAL_PLANNING: PlanningItem[] = [
 
   // 必備清單
   { id: 'p55', category: '必備清單', text: '旅遊保險', completed: false },
+  { id: 'p55-1', category: '必備清單', text: '護照', completed: false },
+  { id: 'p55-2', category: '必備清單', text: '護照影本', completed: false },
+  { id: 'p55-3', category: '必備清單', text: '大頭照2張', completed: false },
   { id: 'p56', category: '必備清單', subCategory: 'APP', text: 'Japan Transit Planner', completed: false },
   { id: 'p57', category: '必備清單', subCategory: 'APP', text: '食べログTabelog', completed: false },
   { id: 'p58', category: '必備清單', subCategory: 'APP', text: 'TaxiGO', completed: false },
   { id: 'p59', category: '必備清單', subCategory: 'APP', text: 'Payke', completed: false },
   { id: 'p60', category: '必備清單', subCategory: 'APP', text: 'tenki.jp', completed: false },
 
-  // 必吃清單 & 必買清單
-  { id: 'p61', category: '必吃清單', text: '博多拉麵', completed: false },
-  { id: 'p62', category: '必吃清單', text: '熊本馬肉刺身', completed: false },
-  { id: 'p63', category: '必買清單', text: '明太子相關製品', completed: false },
-  { id: 'p64', category: '必買清單', text: '藥妝用品', completed: false },
+  // 伴手禮與購物清單 (Fukuoka)
+  { id: 's1', category: '購物清單', subCategory: '藥妝', text: '合利他命', completed: false },
+  { id: 's2', category: '購物清單', subCategory: '藥妝', text: 'EVE', completed: false },
+  { id: 's3', category: '購物清單', subCategory: '藥妝', text: '大正感冒藥', completed: false },
+  { id: 's4', category: '購物清單', subCategory: '免稅品', text: '專櫃化妝品', completed: false },
+  { id: 's5', category: '購物清單', subCategory: '免稅品', text: '酒類', completed: false },
+  { id: 's6', category: '購物清單', subCategory: '福岡特產', text: '明太子', completed: false },
+  { id: 's7', category: '購物清單', subCategory: '福岡特產', text: '努努雞', completed: false },
+  { id: 's8', category: '購物清單', subCategory: '福岡特產', text: '博多長濱拉麵調理包', completed: false },
+  { id: 's9', category: '購物清單', subCategory: '買給誰', text: '媽媽 - 專櫃精華液（預期 $2000）', completed: false },
+  { id: 's10', category: '購物清單', subCategory: '買給誰', text: '同事 - 明太子仙貝（預期 $500）', completed: false },
+
+  // 福岡必吃美食圖鑑
+  { id: 'f1', category: '美食圖鑑', subCategory: '必吃清單', text: '博多拉麵：一蘭總店、一雙拉麵', completed: false },
+  { id: 'f2', category: '美食圖鑑', subCategory: '必吃清單', text: '牛腸鍋 (Motsunabe)：樂天地、越後屋', completed: false },
+  { id: 'f3', category: '美食圖鑑', subCategory: '必吃清單', text: '水炊鍋 (Mizutaki)：華味鳥、長野', completed: false },
+  { id: 'f4', category: '美食圖鑑', subCategory: '必吃清單', text: '屋台 (Yatai)：天神或中洲一帶的屋台小吃', completed: false },
+  { id: 'f5', category: '美食圖鑑', subCategory: '必吃清單', text: '明太子料理：元祖博多明太重', completed: false },
+  { id: 'f6', category: '美食圖鑑', subCategory: '備用餐廳庫', text: '博多車站內：百貨公司美食街', completed: false },
+  { id: 'f7', category: '美食圖鑑', subCategory: '備用餐廳庫', text: '便利商店：Lawson 炸雞君、FamilyMart 蛋沙拉吐司', completed: false },
+  { id: 'f8', category: '美食圖鑑', subCategory: '備用餐廳庫', text: '超市晚鳥優惠：Lopia 或 Sunny 超市的晚上折扣', completed: false },
 ];
 
 // --- Components ---
@@ -406,10 +489,17 @@ export default function App() {
   const [selectedPlanningCat, setSelectedPlanningCat] = useState('手提行李');
   const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
   const [isAddingExpense, setIsAddingExpense] = useState(false);
+  const [appIconUrl, setAppIconUrl] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('kyushu_icon') || 'https://picsum.photos/seed/kyushu/192/192';
+    }
+    return 'https://picsum.photos/seed/kyushu/192/192';
+  });
   const [isOathExpanded, setIsOathExpanded] = useState(false);
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
   const [newExpenseNote, setNewExpenseNote] = useState('');
   const [newExpenseCat, setNewExpenseCat] = useState<Transaction['category']>('FOOD');
+  const [editingTransactionId, setEditingTransactionId] = useState<string | null>(null);
   const [editingTicket, setEditingTicket] = useState<TicketItem | null>(null);
   const [selectedTicketType, setSelectedTicketType] = useState<'FLIGHT' | 'HOTEL' | 'TRAIN'>('FLIGHT');
   const [geminiLoading, setGeminiLoading] = useState(false);
@@ -417,6 +507,8 @@ export default function App() {
   const [selectedSpotForGuide, setSelectedSpotForGuide] = useState<string | null>(null);
   const [newPlanningText, setNewPlanningText] = useState('');
   const [selectedTicketForDetail, setSelectedTicketForDetail] = useState<TicketItem | null>(null);
+  const [selectedPhraseCat, setSelectedPhraseCat] = useState<string | null>(null);
+  const [selectedPhrase, setSelectedPhrase] = useState<any | null>(null);
 
   // --- Handlers ---
   const addPlanningItem = () => {
@@ -453,19 +545,43 @@ export default function App() {
     setPlanningItems(prev => prev.map(item => item.id === id ? { ...item, completed: !item.completed } : item));
   };
 
-  const addTransaction = () => {
+  const deletePlanningItem = (id: string) => {
+    setPlanningItems(prev => prev.filter(item => item.id !== id));
+  };
+
+  const saveTransaction = () => {
     if (!newExpenseAmount || isNaN(Number(newExpenseAmount))) return;
-    const newTx: Transaction = {
-      id: Date.now().toString(),
-      amount: Number(newExpenseAmount),
-      category: newExpenseCat,
-      note: newExpenseNote || '未命名項目',
-      date: new Date().toISOString().split('T')[0]
-    };
-    setTransactions([newTx, ...transactions]);
+    
+    if (editingTransactionId) {
+      setTransactions(prev => prev.map(t => t.id === editingTransactionId ? {
+        ...t,
+        amount: Number(newExpenseAmount),
+        category: newExpenseCat,
+        note: newExpenseNote || '未命名項目'
+      } : t));
+    } else {
+      const newTx: Transaction = {
+        id: Date.now().toString(),
+        amount: Number(newExpenseAmount),
+        category: newExpenseCat,
+        note: newExpenseNote || '未命名項目',
+        date: new Date().toISOString().split('T')[0]
+      };
+      setTransactions([newTx, ...transactions]);
+    }
+    
     setNewExpenseAmount('');
     setNewExpenseNote('');
+    setEditingTransactionId(null);
     setIsAddingExpense(false);
+  };
+
+  const startEditingTransaction = (t: Transaction) => {
+    setNewExpenseAmount(t.amount.toString());
+    setNewExpenseNote(t.note);
+    setNewExpenseCat(t.category);
+    setEditingTransactionId(t.id);
+    setIsAddingExpense(true);
   };
 
   const deleteTransaction = (id: string) => {
@@ -474,7 +590,14 @@ export default function App() {
 
   const totalExpense = transactions.reduce((sum, t) => sum + t.amount, 0);
 
-
+  // --- Effects ---
+  useEffect(() => {
+    const favicon = document.getElementById('favicon') as HTMLLinkElement;
+    const appleIcon = document.getElementById('apple-icon') as HTMLLinkElement;
+    if (favicon) favicon.href = appIconUrl;
+    if (appleIcon) appleIcon.href = appIconUrl;
+    localStorage.setItem('kyushu_icon', appIconUrl);
+  }, [appIconUrl]);
 
   if (!isAuthenticated) {
     const members = [
@@ -835,7 +958,7 @@ export default function App() {
             >
               {/* Horizontal Category Selector */}
               <div className="flex space-x-6 overflow-x-auto hide-scrollbar pt-2 pb-6 mb-8 border-b border-ink/5 px-2">
-                {['手提行李', '托運行李', '必備清單', '注意事項', '必吃清單', '必買清單'].map((cat) => (
+                {['手提行李', '托運行李', '必備清單', '注意事項', '購物清單', '美食圖鑑'].map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setSelectedPlanningCat(cat)}
@@ -869,15 +992,41 @@ export default function App() {
                         {planningItems.filter(i => i.category === selectedPlanningCat && i.subCategory === subCat).map(item => (
                           <div 
                             key={item.id}
-                            onClick={() => togglePlanning(item.id)}
-                            className={`flex items-center space-x-3 cursor-pointer group p-1.5 rounded-sm transition-all duration-300 ${item.completed ? 'opacity-40' : 'hover:bg-ink/[0.03]'}`}
+                            className={`flex items-center justify-between group p-1.5 rounded-sm transition-all duration-300 ${item.completed ? 'opacity-40' : 'hover:bg-ink/[0.03]'}`}
                           >
-                            <div className={`w-3.5 h-3.5 border border-ink/20 flex items-center justify-center transition-colors ${item.completed ? 'bg-ink border-ink' : 'group-hover:border-ink'}`}>
-                              {item.completed && <Check size={8} className="text-paper" />}
+                            <div 
+                              onClick={() => togglePlanning(item.id)}
+                              className="flex items-center space-x-3 cursor-pointer flex-1 relative"
+                            >
+                              <div className={`w-3.5 h-3.5 border border-ink/20 flex items-center justify-center transition-colors ${item.completed ? 'bg-ink border-ink' : 'group-hover:border-ink'}`}>
+                                {item.completed && <Check size={8} className="text-paper" />}
+                              </div>
+                              <span className={`text-sm transition-all duration-300 font-serif ${item.completed ? 'opacity-100 font-bold' : 'opacity-70 font-medium'}`}>
+                                {item.text}
+                              </span>
+                              
+                              {/* Virtual Stamp for Foodie Guide */}
+                              {selectedPlanningCat === '美食圖鑑' && item.completed && (
+                                <motion.div 
+                                  initial={{ scale: 2, opacity: 0, rotate: -20 }}
+                                  animate={{ scale: 1, opacity: 1, rotate: -15 }}
+                                  className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"
+                                >
+                                  <div className="border-2 border-red-500/40 text-red-500/40 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-widest rotate-[-15deg] border-double">
+                                    已完食
+                                  </div>
+                                </motion.div>
+                              )}
                             </div>
-                            <span className={`text-sm transition-all duration-300 font-serif ${item.completed ? 'line-through' : 'opacity-70 font-medium'}`}>
-                              {item.text}
-                            </span>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deletePlanningItem(item.id);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-1 text-ink/20 hover:text-red-500 transition-all"
+                            >
+                              <X size={12} />
+                            </button>
                           </div>
                         ))}
                       </div>
@@ -958,7 +1107,10 @@ export default function App() {
                 ) : (
                   transactions.map(t => (
                     <div key={t.id} className="bg-white/50 p-4 rounded-lg flex justify-between items-center border border-ink/5 group">
-                      <div className="flex items-center space-x-4">
+                      <div 
+                        className="flex items-center space-x-4 flex-1 cursor-pointer"
+                        onClick={() => startEditingTransaction(t)}
+                      >
                         <div className="w-10 h-10 rounded-full bg-ink/5 flex items-center justify-center text-[9px] font-accent font-bold opacity-30">
                           {t.category.slice(0, 1)}
                         </div>
@@ -969,12 +1121,20 @@ export default function App() {
                       </div>
                       <div className="flex items-center space-x-4">
                         <span className="font-display text-lg">¥{t.amount.toLocaleString()}</span>
-                        <button 
-                          onClick={() => deleteTransaction(t.id)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-ink/20 hover:text-ink"
-                        >
-                          <X size={14} />
-                        </button>
+                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            onClick={() => startEditingTransaction(t)}
+                            className="p-1 text-ink/20 hover:text-ink"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button 
+                            onClick={() => deleteTransaction(t.id)}
+                            className="p-1 text-ink/20 hover:text-red-500"
+                          >
+                            <X size={14} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -996,10 +1156,10 @@ export default function App() {
                       initial={{ y: '100%' }}
                       animate={{ y: 0 }}
                       exit={{ y: '100%' }}
-                      className="fixed bottom-0 left-0 right-0 z-[110] bg-paper rounded-t-3xl p-8 max-w-md mx-auto"
+                      className="fixed bottom-0 left-0 right-0 z-[110] bg-paper rounded-t-3xl p-8 max-w-md mx-auto max-h-[90vh] overflow-y-auto hide-scrollbar shadow-2xl"
                     >
                       <div className="w-12 h-1 bg-ink/10 rounded-full mx-auto mb-8" />
-                      <h3 className="font-display text-3xl mb-8">New Record</h3>
+                      <h3 className="font-display text-3xl mb-8">{editingTransactionId ? 'Edit Record' : 'New Record'}</h3>
                       
                       <div className="space-y-6">
                         <div>
@@ -1040,18 +1200,23 @@ export default function App() {
                           />
                         </div>
 
-                        <div className="pt-6 flex space-x-4">
+                        <div className="pt-6 flex space-x-4 pb-8">
                           <button 
-                            onClick={() => setIsAddingExpense(false)}
+                            onClick={() => {
+                              setIsAddingExpense(false);
+                              setEditingTransactionId(null);
+                              setNewExpenseAmount('');
+                              setNewExpenseNote('');
+                            }}
                             className="flex-1 py-4 border border-ink/10 rounded-sm font-accent font-bold uppercase tracking-widest text-[9px] opacity-30"
                           >
                             Cancel
                           </button>
                           <button 
-                            onClick={addTransaction}
+                            onClick={saveTransaction}
                             className="flex-2 py-4 bg-ink text-paper rounded-sm font-accent font-bold uppercase tracking-widest text-[10px]"
                           >
-                            Save Record
+                            {editingTransactionId ? 'Update Record' : 'Save Record'}
                           </button>
                         </div>
                       </div>
@@ -1062,58 +1227,131 @@ export default function App() {
             </motion.div>
           )}
 
+          {activeTab === 'PHRASES' && (
+            <motion.div 
+              key="phrases"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="h-full flex flex-col overflow-y-auto hide-scrollbar space-y-8"
+            >
+              <div className="space-y-2 text-center pt-4">
+                <h3 className="text-[10px] uppercase tracking-[0.4em] font-accent font-bold opacity-30">Communication</h3>
+                <h2 className="font-display text-3xl">實用語句</h2>
+              </div>
+
+              <div className="space-y-10 pb-12">
+                {PHRASES_DATA.map((cat) => (
+                  <div key={cat.category} className="space-y-4">
+                    <div className="flex items-center space-x-3 px-2">
+                      <div className="w-6 h-6 bg-ink/5 rounded-full flex items-center justify-center">
+                        <cat.icon size={10} className="opacity-40" />
+                      </div>
+                      <h4 className="text-[9px] uppercase tracking-[0.3em] font-accent font-bold opacity-30">{cat.category}</h4>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 gap-2">
+                      {cat.phrases.map((phrase) => (
+                        <button
+                          key={phrase.chinese}
+                          onClick={() => setSelectedPhrase(phrase)}
+                          className="w-full text-left p-4 bg-white border border-ink/5 rounded-xl shadow-sm hover:shadow-md transition-all active:scale-[0.98] flex justify-between items-center group"
+                        >
+                          <div>
+                            <p className="font-serif text-base mb-0.5">{phrase.chinese}</p>
+                            <p className="text-[10px] opacity-30 font-mono italic">{phrase.romaji}</p>
+                          </div>
+                          <div className="w-8 h-8 rounded-full bg-ink/5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ChevronRight size={12} className="opacity-40" />
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           {activeTab === 'CREDITS' && (
             <motion.div 
               key="credits"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="h-full flex flex-col overflow-y-auto hide-scrollbar px-2 py-12 space-y-16 items-center text-center"
+              className="h-full flex flex-col overflow-y-auto hide-scrollbar px-6 pt-2 pb-12 space-y-12 items-center text-center"
             >
+              {/* App Icon Settings */}
+              <div className="w-full max-w-xs space-y-6 bg-white p-8 rounded-3xl border border-ink/5 shadow-sm">
+                <div className="space-y-2">
+                  <h3 className="text-[10px] uppercase tracking-[0.4em] font-accent font-bold opacity-30">App Icon</h3>
+                  <p className="text-[10px] opacity-40 font-serif">自定義桌面圖示 URL</p>
+                </div>
+                
+                <div className="relative group">
+                  <div className="w-24 h-24 mx-auto rounded-[22%] overflow-hidden shadow-xl border-4 border-white mb-4">
+                    <img src={appIconUrl} alt="App Icon Preview" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                  </div>
+                  <input 
+                    type="text" 
+                    value={appIconUrl}
+                    onChange={(e) => setAppIconUrl(e.target.value)}
+                    placeholder="貼上圖片網址..."
+                    className="w-full bg-ink/[0.03] border-none rounded-xl px-4 py-3 text-[10px] font-mono focus:ring-1 focus:ring-ink/10 outline-none text-center"
+                  />
+                </div>
+                
+                <div className="space-y-2 pt-2">
+                  <p className="text-[9px] leading-relaxed opacity-30 font-accent font-bold uppercase tracking-widest">
+                    貼上網址後，重新將網頁「加入主畫面」即可更換圖示
+                  </p>
+                </div>
+              </div>
+
               <div className="space-y-2">
                 <h3 className="text-[10px] uppercase tracking-[0.4em] font-accent font-bold opacity-30">Production</h3>
                 <h2 className="font-display text-3xl">KyushuJournal</h2>
               </div>
               
-              <div className="grid grid-cols-2 gap-x-12 gap-y-10">
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border border-ink/5 shadow-sm">
+              <div className="grid grid-cols-2 gap-x-10 gap-y-6">
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-14 h-14 rounded-full overflow-hidden border border-ink/5 shadow-sm">
                     {/* 廷的頭像 */}
                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80" alt="廷" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
                   <div>
-                    <p className="text-[9px] uppercase tracking-widest font-accent font-bold opacity-30 mb-0.5">CANDID CAPTURER</p>
-                    <p className="font-serif text-lg">廷</p>
+                    <p className="text-[8px] uppercase tracking-widest font-accent font-bold opacity-30 mb-0.5">CANDID CAPTURER</p>
+                    <p className="font-serif text-base">廷</p>
                   </div>
                 </div>
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border border-ink/5 shadow-sm">
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-14 h-14 rounded-full overflow-hidden border border-ink/5 shadow-sm">
                     {/* 佑的頭像 */}
                     <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80" alt="佑" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
                   <div>
-                    <p className="text-[9px] uppercase tracking-widest font-accent font-bold opacity-30 mb-0.5">NAP ARCHITECT</p>
-                    <p className="font-serif text-lg">佑</p>
+                    <p className="text-[8px] uppercase tracking-widest font-accent font-bold opacity-30 mb-0.5">NAP ARCHITECT</p>
+                    <p className="font-serif text-base">佑</p>
                   </div>
                 </div>
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border border-ink/5 shadow-sm">
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-14 h-14 rounded-full overflow-hidden border border-ink/5 shadow-sm">
                     {/* 萱的頭像 */}
                     <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80" alt="萱" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
                   <div>
-                    <p className="text-[9px] uppercase tracking-widest font-accent font-bold opacity-30 mb-0.5">CHIEF GlUTTON</p>
-                    <p className="font-serif text-lg">萱</p>
+                    <p className="text-[8px] uppercase tracking-widest font-accent font-bold opacity-30 mb-0.5">CHIEF GlUTTON</p>
+                    <p className="font-serif text-base">萱</p>
                   </div>
                 </div>
-                <div className="flex flex-col items-center space-y-3">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border border-ink/5 shadow-sm">
+                <div className="flex flex-col items-center space-y-2">
+                  <div className="w-14 h-14 rounded-full overflow-hidden border border-ink/5 shadow-sm">
                     {/* ㄗ的頭像 */}
                     <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80" alt="ㄗ" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </div>
                   <div>
-                    <p className="text-[9px] uppercase tracking-widest font-accent font-bold opacity-30 mb-0.5">TREASURE SCOUT</p>
-                    <p className="font-serif text-lg">ㄗ</p>
+                    <p className="text-[8px] uppercase tracking-widest font-accent font-bold opacity-30 mb-0.5">TREASURE SCOUT</p>
+                    <p className="font-serif text-base">ㄗ</p>
                   </div>
                 </div>
               </div>
@@ -1239,13 +1477,63 @@ export default function App() {
       </main>
 
       {/* Navigation */}
-      <nav className="h-16 border-t border-ink/5 px-8 flex justify-between items-center bg-paper/80 backdrop-blur-md">
+      <nav className="h-16 border-t border-ink/5 px-4 flex justify-between items-center bg-paper/80 backdrop-blur-md">
         <NavItem active={activeTab === 'JOURNAL'} icon={Book} label="Journal" onClick={() => setActiveTab('JOURNAL')} />
         <NavItem active={activeTab === 'TICKET'} icon={Ticket} label="Ticket" onClick={() => setActiveTab('TICKET')} />
         <NavItem active={activeTab === 'PLANNING'} icon={ClipboardList} label="Plan" onClick={() => setActiveTab('PLANNING')} />
         <NavItem active={activeTab === 'EXPENSE'} icon={Calculator} label="Cost" onClick={() => setActiveTab('EXPENSE')} />
+        <NavItem active={activeTab === 'PHRASES'} icon={Languages} label="Talk" onClick={() => setActiveTab('PHRASES')} />
         <NavItem active={activeTab === 'CREDITS'} icon={Users} label="Credits" onClick={() => setActiveTab('CREDITS')} />
       </nav>
+
+      {/* Phrase Detail Modal */}
+      <AnimatePresence>
+        {selectedPhrase && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedPhrase(null)}
+              className="fixed inset-0 z-[110] bg-ink/60 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              className="fixed bottom-0 left-0 right-0 z-[120] bg-paper rounded-t-[32px] p-10 max-w-md mx-auto shadow-2xl"
+            >
+              <div className="w-12 h-1 bg-ink/10 rounded-full mx-auto mb-10" />
+              
+              <div className="space-y-12 text-center">
+                <div className="space-y-2">
+                  <p className="text-[10px] uppercase tracking-[0.4em] font-accent font-bold opacity-30">中文</p>
+                  <h3 className="font-serif text-2xl">{selectedPhrase.chinese}</h3>
+                </div>
+
+                <div className="space-y-4 py-8 border-y border-ink/5">
+                  <p className="text-[10px] uppercase tracking-[0.4em] font-accent font-bold opacity-30">日文 (請出示給對方)</p>
+                  <h2 className="font-display text-5xl leading-tight tracking-tight px-2">
+                    {selectedPhrase.japanese}
+                  </h2>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-[10px] uppercase tracking-[0.4em] font-accent font-bold opacity-30">羅馬拼音</p>
+                  <p className="font-mono text-xl opacity-60 italic">{selectedPhrase.romaji}</p>
+                </div>
+
+                <button 
+                  onClick={() => setSelectedPhrase(null)}
+                  className="w-full py-5 bg-ink text-paper rounded-full font-accent font-bold uppercase tracking-[0.3em] text-[10px] shadow-lg active:scale-95 transition-all"
+                >
+                  關閉視窗
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Gemini Guide Modal */}
       <AnimatePresence>
