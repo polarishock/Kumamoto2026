@@ -525,7 +525,7 @@ export default function App() {
                     onClick={() => handleLogin(m.name)}
                     className="flex flex-col items-center p-4 rounded-2xl border border-ink/5 bg-white shadow-sm hover:shadow-md transition-all active:scale-95"
                   >
-                    <div className="w-12 h-12 rounded-full overflow-hidden mb-3 grayscale">
+                    <div className="w-12 h-12 rounded-full overflow-hidden mb-3">
                       <img src={m.img} alt={m.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     </div>
                     <span className="font-serif text-lg">{m.name}</span>
@@ -1076,7 +1076,6 @@ export default function App() {
               </div>
               
               <div className="grid grid-cols-2 gap-x-12 gap-y-10">
-              <div className="grid grid-cols-2 gap-x-12 gap-y-10">
                 <div className="flex flex-col items-center space-y-3">
                   <div className="w-16 h-16 rounded-full overflow-hidden border border-ink/5 shadow-sm">
                     {/* 廷的頭像 */}
@@ -1117,7 +1116,6 @@ export default function App() {
                     <p className="font-serif text-lg">ㄗ</p>
                   </div>
                 </div>
-              </div>
               </div>
 
               {/* Travel Oath Card */}
