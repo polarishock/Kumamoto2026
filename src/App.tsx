@@ -106,7 +106,7 @@ const JOURNAL_DATA: JournalEntry[] = [
     title: "熊本初見",
     subtitle: "Kumamoto First Sight",
     // Day 1 封面照片
-    image: "https://images.unsplash.com/photo-1590230441637-d635073fe4aa?auto=format&fit=crop&w=1200&q=80",
+    image: "https://raw.githubusercontent.com/polarishock/Kumamoto2026/main/photos/day1top",
     description: "從桃園機場出發，抵達熊本後展開旅程。品嚐著名的勝烈亭豬排，漫步於歷史悠久的熊本城，夜晚前往博多享用美味燒肉。",
     itinerary: [
       { time: "04:00 - 04:30", name: "家裡出發 → 桃園機場", type: 'TRANSPORT' },
@@ -146,7 +146,7 @@ const JOURNAL_DATA: JournalEntry[] = [
     title: "糸島海風",
     subtitle: "Itoshima Sea Breeze",
     // Day 2 封面照片
-    image: "https://images.unsplash.com/photo-1505069194752-51c76275c32a?auto=format&fit=crop&w=1200&q=80",
+    image: "https://raw.githubusercontent.com/polarishock/Kumamoto2026/main/photos/day2top",
     description: "參加糸島深度一日遊。從白絲瀑布的清涼到雷山千如寺的莊嚴，再到櫻井二見浦的浪漫海洋，感受糸島獨特的自然魅力。",
     itinerary: [
       { time: "07:00 - 08:00", name: "早餐自理", type: 'FOOD' },
@@ -189,7 +189,7 @@ const JOURNAL_DATA: JournalEntry[] = [
     title: "福岡漫遊",
     subtitle: "Fukuoka City Walk",
     // Day 3 封面照片
-    image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80",
+    image: "https://raw.githubusercontent.com/polarishock/Kumamoto2026/main/photos/day3top",
     description: "前往能古島海島公園享受自然美景與絕景烤肉。下午回到天神商圈與博多運河城盡情購物，最後以熱騰騰的牛腸鍋與LaLaport鋼彈劃下句點。",
     itinerary: [
       { time: "07:00 - 08:00", name: "早餐自理", type: 'FOOD' },
@@ -230,7 +230,7 @@ const JOURNAL_DATA: JournalEntry[] = [
     title: "歸途時光",
     subtitle: "Homebound Journey",
     // Day 4 封面照片
-    image: "https://images.unsplash.com/photo-1436491865332-7a61a109c0f2?auto=format&fit=crop&w=1200&q=80",
+    image: "https://raw.githubusercontent.com/polarishock/Kumamoto2026/main/photos/day4top",
     description: "最後的熊本時光。辦理退房後前往機場，在觀景台欣賞飛機起降，並在商店區挑選伴手禮，帶著滿滿的回憶返回家園。",
     itinerary: [
       { time: "07:00 - 07:10", name: "辦理退房", type: 'STAY' },
